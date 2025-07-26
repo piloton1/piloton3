@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LearnWithPiloton - Home</title>
+  <style>
+    :root {
+      --main-color: #004aad;
+      --secondary-color: #003088;
+      --bg-light: #f2f7f9;
+      --card-bg: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-light);
+      color: #333;
+    }
+    header {
+      background-color: var(--main-color);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header img {
+      height: 50px;
+      margin-right: 15px;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover,
+    nav a.active {
+      text-decoration: underline;
+    }
+    main {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    section {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #e6e6e6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="LearnWithPiloton Logo" />
+    <h1>LearnWithPiloton</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="courses.html">Courses</a></li>
+        <li><a href="videos.html">Video Lessons</a></li>
+        <li><a href="rewards.html">Rewards</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Welcome to LearnWithPiloton</h2>
+      <p>Your platform for TVET, ICT, Coding, Computer Science, and Mathematics learning.</p>
+      <p>Earn rewards by completing quizzes and engage with our video lessons!</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 LearnWithPiloton | Contact: iukunzwenimana@gmail.com</p>
+  </footer>
+</body>
+</html>

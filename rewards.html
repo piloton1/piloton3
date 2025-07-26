@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rewards & Leaderboard - LearnWithPiloton</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    background: #f4f9fc;
+    color: #333;
+  }
+  header {
+    background-color: #004aad;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header img {
+    height: 50px;
+    margin-right: 15px;
+  }
+  nav.main-nav ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex;
+    gap: 20px;
+  }
+  nav.main-nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  nav.main-nav a:hover {
+    text-decoration: underline;
+  }
+  main {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    color: #004aad;
+    margin-bottom: 20px;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  button {
+    background: #004aad;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #003080;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  th, td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    background-color: #004aad;
+    color: white;
+  }
+  tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 15px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .gold { background: #ffd700; color: #333; }
+  .silver { background: #c0c0c0; color: #222; }
+  .bronze { background: #cd7f32; }
+  .participant { background: #777; }
+  footer {
+    margin-top: 40px;
+    padding: 15px;
+    text-align: center;
+    background-color: #e6e6e6;
+    font-size: 14px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="LearnWithPiloton Logo" />
+  <nav class="main-nav" aria-label="Primary">
+    <ul>
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#courses">Courses</a></li>
+      <li><a href="index.html#youtube">Video Lessons</a></li>
+      <li><a href="reward.html">Rewards</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+      <li><a href="login.html">Admin</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h1>🏆 Quiz Leaderboard & Rewards</h1>
+
+  <div class="buttons">
+    <button id="clearBtn" title="Clear leaderboard data">🗑️ Clear Scores</button>
+    <button id="downloadBtn" title="Download leaderboard as PDF">📥 Download PDF</button>
+  </div>
+
+  <table aria-label="Leaderboard table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Quiz</th>
+        <th>Score (%)</th>
+        <th>Badge</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboardBody">
+      <!-- Filled by JavaScript -->
+    </tbody>
+  </table>
+</main>
+
+<footer>
+  <marquee><p>© 2025 isa Piloton | Contact: iukunzwenimana@gmail.com</p></marquee>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  const leaderboardBody = document.getElementById('leaderboardBody');
+  const clearBtn = document.getElementById('clearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const emailRecipient = 'iukunzwenimana@gmail.com';
+  const whatsappNumber = '250794924954';
+
+  function getBadge(score) {
+    if (score >= 90) return '<span class="badge gold">🥇 Gold</span>';
+    if (score >= 70) return '<span class="badge silver">🥈 Silver</span>';
+    if (score >= 50) return '<span class="badge bronze">🥉 Bronze</span>';
+    return '<span class="badge participant">🎖️ Participant</span>';
+  }
+
+  function loadLeaderboard() {
+    let data = JSON.parse(localStorage.getItem('quizScores')) || [];
+    data.sort((a,b) => b.score - a.score);
+
+    leaderboardBody.innerHTML = '';
+
+    if (data.length === 0) {
+      leaderboardBody.innerHTML = `<tr><td colspan="5">No quiz results available yet.</td></tr>`;
+      return;
+    }
+
+    data.forEach((entry, i) => {
+      leaderboardBody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${sanitize(entry.name)}</td>
+          <td>${sanitize(entry.quiz)}</td>
+          <td>${entry.score}</td>
+          <td>${getBadge(entry.score)}</td>
+        </tr>
+      `);
+    });
+
+    sendTopScorerNotifications(data[0]);
+  }
+
+  function sanitize(str) {
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
+  }
+
+  clearBtn.addEventListener('click', () => {
+    if(confirm('Are you sure you want to clear all leaderboard data?')) {
+      localStorage.removeItem('quizScores');
+      loadLeaderboard();
+      alert('Leaderboard data cleared.');
+    }
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let data = JSON.parse(localStorage.getItem('quizScores')) || [];
+    data.sort((a,b) => b.score - a.score);
+
+    doc.setFontSize(18);
+    doc.text('LearnWithPiloton Quiz Leaderboard', 14, 22);
+    doc.setFontSize(12);
+    let y = 32;
+
+    if(data.length === 0) {
+      doc.text('No quiz results available yet.', 14, y);
+    } else {
+      doc.text('Rank', 14, y);
+      doc.text('Name', 30, y);
+      doc.text('Quiz', 80, y);
+      doc.text('Score (%)', 140, y);
+      y += 8;
+
+      data.forEach((entry, i) => {
+        if(y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(String(i + 1), 14, y);
+        doc.text(entry.name, 30, y);
+        doc.text(entry.quiz, 80, y);
+        doc.text(String(entry.score), 140, y);
+        y += 8;
+      });
+    }
+
+    doc.save('quiz_leaderboard.pdf');
+  });
+
+  function sendTopScorerNotifications(topEntry) {
+    if(!topEntry) return;
+
+    // WhatsApp message URL (does not auto open)
+    const waMessage = `🏆 Top Quiz Scorer:\nName: ${topEntry.name}\nQuiz: ${topEntry.quiz}\nScore: ${topEntry.score}%`;
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(waMessage)}`;
+
+    // Email mailto URL (does not auto open)
+    const subject = encodeURIComponent('Top Quiz Scorer Notification');
+    const body = encodeURIComponent(`Hello,\n\nThe top scorer in the quiz leaderboard is:\n\nName: ${topEntry.name}\nQuiz: ${topEntry.quiz}\nScore: ${topEntry.score}%\n\nCongratulations!\n\n-- LearnWithPiloton`);
+    const mailtoLink = `mailto:${emailRecipient}?subject=${subject}&body=${body}`;
+
+    // Optionally, you can uncomment these to auto open the URLs:
+    // window.open(waUrl, '_blank');
+    // window.open(mailtoLink);
+
+    // Or add buttons to trigger these yourself for better UX
+  }
+
+  window.onload = loadLeaderboard;
+</script>
+
+</body>
+</html>

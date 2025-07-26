@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Login & Quiz Management - LearnWithPiloton</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    background: #f4f9fc;
+    color: #333;
+  }
+  header {
+    background-color: #004aad;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header img {
+    height: 50px;
+    margin-right: 15px;
+  }
+  nav.main-nav ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex;
+    gap: 20px;
+  }
+  nav.main-nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  nav.main-nav a:hover {
+    text-decoration: underline;
+  }
+  main {
+    max-width: 700px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px 25px;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    color: #004aad;
+    margin-bottom: 25px;
+  }
+  form {
+    margin-top: 15px;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+  }
+  input[type="text"], input[type="password"], select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 25px;
+    width: 100%;
+    background: #004aad;
+    border: none;
+    color: white;
+    padding: 15px 0;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #003080;
+  }
+  .hidden {
+    display: none;
+  }
+  #quizCreator {
+    margin-top: 30px;
+  }
+  #questionsList {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fafafa;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  #questionsList h3 {
+    margin-top: 0;
+  }
+  .question-item {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+  footer {
+    margin-top: 40px;
+    padding: 15px;
+    text-align: center;
+    background-color: #e6e6e6;
+    font-size: 14px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="LearnWithPiloton Logo" />
+  <nav class="main-nav" aria-label="Primary">
+    <ul>
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="index.html#courses">Courses</a></li>
+      <li><a href="index.html#youtube">Video Lessons</a></li>
+      <li><a href="reward.html">Rewards</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
+      <li><a href="login.html">Admin</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <h1>Admin Login & Quiz Management</h1>
+
+  <form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" autocomplete="username" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" autocomplete="current-password" required />
+
+    <button type="submit">Login</button>
+  </form>
+
+  <section id="quizCreator" class="hidden">
+    <h2>Create a New Quiz Question</h2>
+    <form id="createQuestionForm">
+      <label for="quizType">Quiz Type:</label>
+      <select id="quizType" required>
+        <option value="" disabled selected>Select quiz type</option>
+        <option value="Math">Math</option>
+        <option value="Coding">Coding</option>
+        <option value="Computer Science">Computer Science</option>
+      </select>
+
+      <label for="questionText">Question Text:</label>
+      <input type="text" id="questionText" placeholder="Enter the question" required />
+
+      <label for="correctAnswer">Correct Answer:</label>
+      <input type="text" id="correctAnswer" placeholder="Enter the correct answer" required />
+
+      <label for="wrongAnswers">Wrong Answers (comma separated):</label>
+      <input type="text" id="wrongAnswers" placeholder="e.g. wrong1, wrong2, wrong3" required />
+
+      <button type="submit">Add Question</button>
+    </form>
+
+    <div id="questionsList">
+      <h3>Existing Questions (stored in localStorage)</h3>
+      <div id="questionsDisplay"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+ <marquee> <p>© 2025 isa Piloton | Contact: iukunzwenimana@gmail.com</p></marquee>
+</footer>
+
+<script>
+  const adminUser = "piloton1";
+  const adminPass = "isa@123";
+
+  const loginForm = document.getElementById('loginForm');
+  const quizCreatorSection = document.getElementById('quizCreator');
+  const questionsDisplay = document.getElementById('questionsDisplay');
+  const createQuestionForm = document.getElementById('createQuestionForm');
+
+  // Show questions stored in localStorage
+  function displayQuestions() {
+    let questions = JSON.parse(localStorage.getItem('quizQuestions')) || [];
+    if(questions.length === 0) {
+      questionsDisplay.innerHTML = "<p>No questions added yet.</p>";
+      return;
+    }
+    questionsDisplay.innerHTML = "";
+    questions.forEach((q, i) => {
+      questionsDisplay.innerHTML += `
+        <div class="question-item">
+          <strong>Q${i + 1} (${q.quizType}):</strong> ${q.questionText} <br/>
+          Correct Answer: ${q.correctAnswer} <br/>
+          Wrong Answers: ${q.wrongAnswers.join(", ")}
+        </div>
+      `;
+    });
+  }
+
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const user = this.username.value.trim();
+    const pass = this.password.value;
+
+    if(user === adminUser && pass === adminPass) {
+      alert("Login successful! You can now create quiz questions.");
+      loginForm.classList.add('hidden');
+      quizCreatorSection.classList.remove('hidden');
+      displayQuestions();
+    } else {
+      alert("Invalid username or password.");
+    }
+  });
+
+  createQuestionForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const quizType = this.quizType.value;
+    const questionText = this.questionText.value.trim();
+    const correctAnswer = this.correctAnswer.value.trim();
+    const wrongAnswersRaw = this.wrongAnswers.value.trim();
+
+    if(!quizType || !questionText || !correctAnswer || !wrongAnswersRaw) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    const wrongAnswers = wrongAnswersRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+    let questions = JSON.parse(localStorage.getItem('quizQuestions')) || [];
+    questions.push({
+      quizType,
+      questionText,
+      correctAnswer,
+      wrongAnswers
+    });
+    localStorage.setItem('quizQuestions', JSON.stringify(questions));
+    alert("Question added successfully!");
+    this.reset();
+    displayQuestions();
+    send(quiz.html);
+  });
+</script>
+
+</body>
+</html>
